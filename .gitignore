@@ -12,3 +12,4 @@ frontend/.next/
 
 # Mac
 .DS_Store
+.vercel
