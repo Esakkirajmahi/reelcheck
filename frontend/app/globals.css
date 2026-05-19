@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #08090F;
+  --surface: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+/* Glass card */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #a78bfa, #60a5fa, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Drop zone border animation */
+@keyframes borderPulse {
+  0%, 100% { border-color: rgba(99, 102, 241, 0.4); }
+  50% { border-color: rgba(99, 102, 241, 0.9); }
+}
+
+.drop-zone-active {
+  animation: borderPulse 1.5s ease-in-out infinite;
+}
+
+/* Trust meter arc animation */
+@keyframes arcDraw {
+  from { stroke-dashoffset: 565; }
+}
+
+.arc-animated {
+  animation: arcDraw 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Stage pulse */
+@keyframes stagePulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.stage-active {
+  animation: stagePulse 1.8s ease-in-out infinite;
+}
