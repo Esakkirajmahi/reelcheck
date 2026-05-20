@@ -25,6 +25,8 @@ export interface MentionedProduct {
   flipkart_search_url: string | null;
   amazon_search_url: string | null;
   google_shopping_url: string | null;
+  google_lens_url: string | null;
+  frame_url: string | null;
   price_plausibility: "plausible" | "low" | "suspicious";
   price_note: string | null;
 }

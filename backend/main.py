@@ -1,9 +1,14 @@
 import logging
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
+
+# Ensure frames directory exists
+os.makedirs("data/frames", exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -29,6 +34,9 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix="/api")
+
+# Serve extracted frames publicly so Google Lens can access them
+app.mount("/frames", StaticFiles(directory="data/frames"), name="frames")
 
 
 @app.get("/")

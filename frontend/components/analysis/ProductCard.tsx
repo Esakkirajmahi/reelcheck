@@ -85,10 +85,31 @@ export default function ProductCard({ product }: { product: MentionedProduct }) 
         <p className="text-xs text-white/45 leading-relaxed -mt-1">{product.price_note}</p>
       )}
 
+      {/* Google Lens — exact visual match */}
+      {product.google_lens_url && (
+        <a
+          href={product.google_lens_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-violet-500/15 to-blue-500/15 border border-violet-500/25 hover:border-violet-400/50 transition-all group"
+        >
+          <span className="text-lg">🔍</span>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-white group-hover:text-violet-300 transition-colors">
+              Find Exact Product on Google Lens
+            </p>
+            <p className="text-xs text-white/40 mt-0.5">
+              Visual search using the actual frame from the reel
+            </p>
+          </div>
+          <ExternalLink className="w-4 h-4 text-white/30 group-hover:text-violet-400 transition-colors shrink-0" />
+        </a>
+      )}
+
       {/* Search links */}
       <div className="flex flex-col gap-2">
         <p className="text-xs text-white/30 uppercase tracking-wider font-medium">
-          Find this product
+          Search by name
         </p>
         <div className="flex gap-2 flex-wrap">
           {product.flipkart_search_url && (
@@ -100,7 +121,7 @@ export default function ProductCard({ product }: { product: MentionedProduct }) 
             >
               <span className="text-sm">🛒</span>
               <span className="text-xs font-medium text-[#F9A11B]">Flipkart</span>
-              <ExternalLink className="w-3 h-3 text-[#F9A11B]/50 group-hover:text-[#F9A11B] transition-colors" />
+              <ExternalLink className="w-3 h-3 text-[#F9A11B]/50 group-hover:text-[#F9A11B]" />
             </a>
           )}
           {product.amazon_search_url && (
@@ -112,7 +133,7 @@ export default function ProductCard({ product }: { product: MentionedProduct }) 
             >
               <span className="text-sm">📦</span>
               <span className="text-xs font-medium text-[#FF9900]">Amazon</span>
-              <ExternalLink className="w-3 h-3 text-[#FF9900]/50 group-hover:text-[#FF9900] transition-colors" />
+              <ExternalLink className="w-3 h-3 text-[#FF9900]/50 group-hover:text-[#FF9900]" />
             </a>
           )}
           {product.google_shopping_url && (
@@ -124,13 +145,10 @@ export default function ProductCard({ product }: { product: MentionedProduct }) 
             >
               <span className="text-sm">🛍️</span>
               <span className="text-xs font-medium text-blue-400">Google Shopping</span>
-              <ExternalLink className="w-3 h-3 text-blue-400/50 group-hover:text-blue-400 transition-colors" />
+              <ExternalLink className="w-3 h-3 text-blue-400/50 group-hover:text-blue-400" />
             </a>
           )}
         </div>
-        <p className="text-xs text-white/20 mt-1">
-          💡 For exact match — screenshot the product from the reel and search with Google Lens
-        </p>
       </div>
     </div>
   );

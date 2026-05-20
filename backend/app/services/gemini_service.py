@@ -72,6 +72,7 @@ Return ONLY a valid JSON object — no markdown fences, no explanation — with 
       "flipkart_search_url": "https://www.flipkart.com/search?q=SEARCH+QUERY+URL+ENCODED",
       "amazon_search_url": "https://www.amazon.in/s?k=SEARCH+QUERY+URL+ENCODED",
       "google_shopping_url": "https://www.google.com/search?q=SEARCH+QUERY+URL+ENCODED&tbm=shop",
+      "best_frame_index": <integer 0-9, index of the frame that best shows this product>,
       "price_plausibility": "plausible | low | suspicious",
       "price_note": "one line: is this price realistic for this specific product?"
     }}
@@ -176,17 +177,24 @@ def analyze_reel(
     ocr_text: str,
     frame_paths: List[str],
     api_key: str,
+    frame_urls: List[str] = None,
 ) -> dict:
     client = genai.Client(api_key=api_key)
+
+    frames_to_send = [p for p in frame_paths[:10] if os.path.exists(p)]
+
+    # Tell Gemini the frame indices so it can identify which frame shows each product
+    frame_index_note = ""
+    if frame_urls:
+        frame_index_note = f"\n\nFRAME INDEX: You are being sent {len(frames_to_send)} frames (index 0 to {len(frames_to_send)-1}). For each product in mentioned_products, set best_frame_index to the index (0-based) of the frame that best shows that product."
 
     prompt_text = ANALYSIS_PROMPT.format(
         transcript=transcript.strip() if transcript else "No speech detected in this reel.",
         ocr_text=ocr_text.strip() if ocr_text else "No text detected on screen.",
-    )
+    ) + frame_index_note
 
     contents: list = [prompt_text]
 
-    frames_to_send = [p for p in frame_paths[:10] if os.path.exists(p)]
     for frame_path in frames_to_send:
         try:
             contents.append(_image_to_part(frame_path))
@@ -206,6 +214,22 @@ def analyze_reel(
             result = json.loads(match.group())
         else:
             raise ValueError(f"Gemini returned unparseable response: {raw[:200]}")
+
+    # Inject Google Lens URLs using the frame URLs
+    if frame_urls and result.get("mentioned_products"):
+        for product in result["mentioned_products"]:
+            frame_idx = product.get("best_frame_index", 0)
+            if isinstance(frame_idx, int) and 0 <= frame_idx < len(frame_urls):
+                frame_url = frame_urls[frame_idx]
+            elif frame_urls:
+                frame_url = frame_urls[0]
+            else:
+                frame_url = None
+
+            if frame_url:
+                encoded = frame_url.replace(":", "%3A").replace("/", "%2F")
+                product["google_lens_url"] = f"https://lens.google.com/uploadbyurl?url={frame_url}"
+                product["frame_url"] = frame_url
 
     _apply_defaults(result)
     return result

@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 import shutil
@@ -13,9 +14,11 @@ from app.storage.job_store import complete_job, fail_job, update_job
 
 logger = logging.getLogger(__name__)
 
+PUBLIC_FRAMES_DIR = "data/frames"
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://reelcheck-backend.onrender.com")
+
 
 def run_pipeline(job_id: str, video_path: str):
-    """Pipeline for uploaded video files."""
     work_dir = tempfile.mkdtemp(prefix=f"reelcheck_{job_id}_")
     try:
         _run_stages(job_id, video_path, work_dir)
@@ -29,7 +32,6 @@ def run_pipeline(job_id: str, video_path: str):
 
 
 def run_pipeline_from_url(job_id: str, url: str):
-    """Pipeline for URL-based analysis — downloads first, then runs stages."""
     work_dir = tempfile.mkdtemp(prefix=f"reelcheck_{job_id}_")
     try:
         update_job(job_id, stage="Downloading video...")
@@ -43,8 +45,6 @@ def run_pipeline_from_url(job_id: str, url: str):
 
 
 def _run_stages(job_id: str, video_path: str, work_dir: str):
-    """Shared processing stages for both file and URL pipelines."""
-
     # Stage 1 — Extract audio and frames
     update_job(job_id, stage="Extracting audio and frames...")
     audio_path = os.path.join(work_dir, "audio.wav")
@@ -52,6 +52,10 @@ def _run_stages(job_id: str, video_path: str, work_dir: str):
 
     extract_audio(video_path, audio_path)
     frame_paths = extract_frames(video_path, frames_dir, max_frames=settings.MAX_FRAMES)
+
+    # Save frames to public directory so Google Lens can access them
+    public_job_frames_dir = os.path.join(PUBLIC_FRAMES_DIR, job_id)
+    public_frame_urls = _save_public_frames(frame_paths, public_job_frames_dir, job_id)
 
     # Stage 2 — Transcribe
     update_job(job_id, stage="Transcribing audio...")
@@ -67,8 +71,24 @@ def _run_stages(job_id: str, video_path: str, work_dir: str):
         transcript=transcript,
         ocr_text=ocr_text,
         frame_paths=frame_paths,
+        frame_urls=public_frame_urls,
         api_key=settings.GEMINI_API_KEY,
     )
 
     complete_job(job_id, result=result, transcript=transcript)
     logger.info(f"[{job_id}] Pipeline completed successfully")
+
+
+def _save_public_frames(frame_paths: list, public_dir: str, job_id: str) -> list:
+    """Copy frames to public static directory and return their public URLs."""
+    os.makedirs(public_dir, exist_ok=True)
+    urls = []
+    for i, src_path in enumerate(frame_paths):
+        if os.path.exists(src_path):
+            filename = f"frame_{i:03d}.jpg"
+            dst_path = os.path.join(public_dir, filename)
+            shutil.copy2(src_path, dst_path)
+            url = f"{BACKEND_URL}/frames/{job_id}/{filename}"
+            urls.append(url)
+    logger.info(f"Saved {len(urls)} public frames for job {job_id}")
+    return urls
