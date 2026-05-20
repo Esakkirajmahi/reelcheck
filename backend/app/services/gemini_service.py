@@ -63,15 +63,17 @@ Return ONLY a valid JSON object — no markdown fences, no explanation — with 
   ],
   "mentioned_products": [
     {{
-      "name": "specific product name as visible or described — e.g. 'Casio F-91W Watch', 'Titan Analog Watch', 'leather strap wristwatch'",
+      "name": "most specific possible product name — include brand + model number/name + color + material + style. e.g. 'Casio F-91W-1DG Black Dial Digital Watch' not just 'Casio watch'",
       "category": "watch | phone | clothing | accessories | electronics | home | beauty | other",
-      "claimed_price": "price as stated in the reel — e.g. '₹249', 'under ₹250', or null if not stated",
+      "claimed_price": "price as stated in the reel — e.g. '₹249', 'under ₹250', or null",
       "claimed_platform": "Flipkart | Amazon | Meesho | Myntra | other | null",
-      "search_query": "best search keywords to find this exact product — be specific, include brand+type+color if visible",
-      "flipkart_search_url": "https://www.flipkart.com/search?q=SEARCH+QUERY+URL+ENCODED — construct this using the search_query",
-      "amazon_search_url": "https://www.amazon.in/s?k=SEARCH+QUERY+URL+ENCODED — construct this using the search_query",
+      "visual_details": "describe all visible details: dial color, strap color/material, shape, size, any visible text/logo/model number on product",
+      "search_query": "ultra-specific search query — include brand + model + color + material + distinguishing feature. e.g. 'Casio F91W black resin strap digital watch men'",
+      "flipkart_search_url": "https://www.flipkart.com/search?q=SEARCH+QUERY+URL+ENCODED",
+      "amazon_search_url": "https://www.amazon.in/s?k=SEARCH+QUERY+URL+ENCODED",
+      "google_shopping_url": "https://www.google.com/search?q=SEARCH+QUERY+URL+ENCODED&tbm=shop",
       "price_plausibility": "plausible | low | suspicious",
-      "price_note": "one line assessing if the claimed price is realistic for this product — or null"
+      "price_note": "one line: is this price realistic for this specific product?"
     }}
   ],
   "persuasion_tactics": [
@@ -115,18 +117,17 @@ OFFICIAL LINKS RULES:
 - If the creator says "comment to get the link" — ignore the bait. Just list what was actually shown.
 
 PRODUCT DETECTION RULES (critical for e-commerce reels):
-- Look carefully at ALL video frames for physical products — watches, phones, clothes, accessories, gadgets, etc.
-- For EACH product visible or mentioned, add an entry to mentioned_products
-- Be as specific as possible in naming the product — include brand, model, color, material if visible
-- For search_query: use the most specific keywords that would find this exact product (brand + type + key feature)
-- Construct flipkart_search_url by URL-encoding the search_query: spaces → +, use https://www.flipkart.com/search?q=
-- Construct amazon_search_url similarly: https://www.amazon.in/s?k=
-- Example: if a "black dial Casio digital watch" is shown at ₹249:
-  search_query = "Casio digital watch black dial"
-  flipkart_search_url = "https://www.flipkart.com/search?q=Casio+digital+watch+black+dial"
-  amazon_search_url = "https://www.amazon.in/s?k=Casio+digital+watch+black+dial"
-- price_plausibility: "plausible" if realistic, "low" if suspiciously cheap but possible, "suspicious" if almost certainly fake
-- For watches under ₹250: most branded watches are suspicious at this price; unbranded/generic ones may be plausible
+- Examine ALL video frames carefully for physical products
+- For EACH product visible, add an entry to mentioned_products
+- NAME: Be as specific as Google Lens would be — include every visible detail: brand, model number/name, color, material, strap type, dial shape, size indicators, any text visible on the product itself
+- VISUAL DETAILS: Describe exactly what you see — "black rectangular digital display, grey resin strap, silver case, Casio branding visible on dial"
+- SEARCH QUERY: Make it ultra-specific. Instead of "Casio watch" write "Casio F91W black digital watch grey resin strap men". The more specific, the closer to the exact product.
+- URL encode: spaces → +
+- flipkart_search_url: https://www.flipkart.com/search?q=<encoded query>
+- amazon_search_url: https://www.amazon.in/s?k=<encoded query>
+- google_shopping_url: https://www.google.com/search?q=<encoded query>&tbm=shop
+- If you can identify the exact model number from the product (e.g. F-91W, MQ-24, etc.), always include it in search_query
+- price_plausibility: "plausible" if realistic, "low" if suspiciously cheap, "suspicious" if almost certainly fake
 
 SCORING:
 - Trust scores: 80-100 = trustworthy, 60-79 = mixed, 40-59 = suspicious, 0-39 = misleading

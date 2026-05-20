@@ -20,9 +20,11 @@ export interface MentionedProduct {
   category: string;
   claimed_price: string | null;
   claimed_platform: string | null;
+  visual_details: string | null;
   search_query: string;
   flipkart_search_url: string | null;
   amazon_search_url: string | null;
+  google_shopping_url: string | null;
   price_plausibility: "plausible" | "low" | "suspicious";
   price_note: string | null;
 }

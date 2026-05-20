@@ -1,4 +1,4 @@
-import { ExternalLink, ShoppingBag, AlertTriangle, CheckCircle, TrendingDown } from "lucide-react";
+import { ExternalLink, CheckCircle, AlertTriangle, TrendingDown, Search } from "lucide-react";
 import type { MentionedProduct } from "@/lib/types";
 
 const PLAUSIBILITY_CONFIG = {
@@ -63,7 +63,6 @@ export default function ProductCard({ product }: { product: MentionedProduct }) 
           </div>
         </div>
 
-        {/* Price plausibility badge */}
         <div
           className={`shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-medium ${plausibility.bg} border ${plausibility.border}`}
           style={{ color: plausibility.color }}
@@ -73,6 +72,14 @@ export default function ProductCard({ product }: { product: MentionedProduct }) 
         </div>
       </div>
 
+      {/* Visual details */}
+      {product.visual_details && (
+        <div className="flex items-start gap-2 bg-white/[0.03] rounded-lg px-3 py-2 border border-white/5">
+          <Search className="w-3 h-3 text-white/25 mt-0.5 shrink-0" />
+          <p className="text-xs text-white/50 leading-relaxed">{product.visual_details}</p>
+        </div>
+      )}
+
       {/* Price note */}
       {product.price_note && (
         <p className="text-xs text-white/45 leading-relaxed -mt-1">{product.price_note}</p>
@@ -81,7 +88,7 @@ export default function ProductCard({ product }: { product: MentionedProduct }) 
       {/* Search links */}
       <div className="flex flex-col gap-2">
         <p className="text-xs text-white/30 uppercase tracking-wider font-medium">
-          Search for this product
+          Find this product
         </p>
         <div className="flex gap-2 flex-wrap">
           {product.flipkart_search_url && (
@@ -104,11 +111,26 @@ export default function ProductCard({ product }: { product: MentionedProduct }) 
               className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#FF9900]/10 hover:bg-[#FF9900]/18 border border-[#FF9900]/20 hover:border-[#FF9900]/40 transition-all group"
             >
               <span className="text-sm">📦</span>
-              <span className="text-xs font-medium text-[#FF9900]">Amazon India</span>
+              <span className="text-xs font-medium text-[#FF9900]">Amazon</span>
               <ExternalLink className="w-3 h-3 text-[#FF9900]/50 group-hover:text-[#FF9900] transition-colors" />
             </a>
           )}
+          {product.google_shopping_url && (
+            <a
+              href={product.google_shopping_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-500/10 hover:bg-blue-500/15 border border-blue-500/20 hover:border-blue-400/40 transition-all group"
+            >
+              <span className="text-sm">🛍️</span>
+              <span className="text-xs font-medium text-blue-400">Google Shopping</span>
+              <ExternalLink className="w-3 h-3 text-blue-400/50 group-hover:text-blue-400 transition-colors" />
+            </a>
+          )}
         </div>
+        <p className="text-xs text-white/20 mt-1">
+          💡 For exact match — screenshot the product from the reel and search with Google Lens
+        </p>
       </div>
     </div>
   );
